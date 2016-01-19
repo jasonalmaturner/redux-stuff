@@ -79,7 +79,7 @@ console.log('after toggle', store.getState());
 
 store.dispatch({
   type: 'SET_VISIBILITY_FILTER',
-  filter: 'SHOW_COMPLETED'
+  filter: 'SHOW_COMPLETED',
 });
 
 console.log('after filter set', store.getState());
