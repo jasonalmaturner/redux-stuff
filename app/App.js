@@ -1,5 +1,6 @@
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
+import { createStore } from 'redux';
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -32,6 +33,64 @@ const todos = (state = [], action) => {
       return state;
   }
 };
+
+const visibilityFilter = (
+  state = 'SHOW_ALL',
+  action
+) => {
+  switch (action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default:
+      return state;
+  }
+};
+
+const todoApp = (state = {}, action) => {
+  return {
+    todos: todos(
+      state.todos,
+      action
+    ),
+    visibilityFilter: visibilityFilter(
+      state.visibilityFilter,
+      action
+    ),
+  };
+};
+
+const store = createStore(todoApp);
+console.log('Initial state', store.getState());
+
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 0,
+  text: 'Learn Redux',
+});
+
+console.log('after add', store.getState());
+
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 1,
+  text: 'eat dinner',
+});
+
+console.log('after add', store.getState());
+
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0,
+});
+
+console.log('after toggle', store.getState());
+
+store.dispatch({
+  type: 'SET_VISIBILITY_FILTER',
+  filter: 'SHOW_COMPLETED'
+});
+
+console.log('after filter set', store.getState());
 
 const testAddTodos = () => {
   const stateBefore = [];
