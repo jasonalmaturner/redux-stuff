@@ -6,6 +6,31 @@ import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 const { Component } = React;
 
+// Action Creators
+let nextId = 0;
+const addTodo = (text) => {
+  return {
+    type: 'ADD_TODO',
+    id: nextId++,
+    text,
+  };
+};
+
+const setVisibilityFilter = (filter) => {
+  return {
+    type: 'SET_VISIBILITY_FILTER',
+    filter,
+  };
+};
+
+const toggleTodo = (id) => {
+  return {
+    type: 'TOGGLE_TODO',
+    id,
+  };
+};
+
+// Reducers
 const todo = (state, action) => {
   switch (action.type) {
     case 'ADD_TODO':
@@ -50,11 +75,13 @@ const visibilityFilter = (
   }
 };
 
+// Reducer combiner
 const todoApp = combineReducers({
   todos,
   visibilityFilter,
 });
 
+// Presentational component
 const Link = ({
   children,
   onClick,
@@ -84,13 +111,11 @@ const mapStateToLinkProps = (state, ownProps) => {
 const mapDispatchToLinkProps = (dispatch, ownProps) => {
   return {
     onClick: () => {
-      dispatch({
-        type: 'SET_VISIBILITY_FILTER',
-        filter: ownProps.filter,
-      });
+      dispatch(setVisibilityFilter(ownProps.filter));
     },
   };
 };
+// Container component
 const FilterLink = connect(mapStateToLinkProps, mapDispatchToLinkProps)(Link);
 
 const Footer = () => (
@@ -114,6 +139,7 @@ const Footer = () => (
   </p>
 );
 
+// Presentational component
 const Todo = ({
   onClick,
   completed,
@@ -128,6 +154,7 @@ const Todo = ({
   </li>
 );
 
+// Presentational component
 const TodoList = ({
   todos,
   onTodoClick,
@@ -140,9 +167,8 @@ const TodoList = ({
         onClick={() => onTodoClick(todo.id)} />
     )}
   </ul>
-)
+);
 
-let nextId = 0;
 let AddTodo = ({ dispatch }) => {
   let input;
   return (
@@ -151,11 +177,7 @@ let AddTodo = ({ dispatch }) => {
           input = node;
         }} />
       <button onClick={() => {
-          dispatch({
-            type: 'ADD_TODO',
-            id: nextId++,
-            text: input.value,
-          });
+          dispatch(addTodo(input.value));
           input.value = '';
         }}>
         Add Todo
@@ -185,13 +207,11 @@ const mapStateToTodoListProps = (state) => {
 };
 const mapDispatchToTodoListProps = (dispatch) => {
   return {
-    onTodoClick: (id) =>
-      dispatch({
-        type: 'TOGGLE_TODO',
-        id
-      })
-  }
-}
+    onTodoClick: (id) => {
+      dispatch(toggleTodo(id));
+    },
+  };
+};
 
 const VisibleTodoList = connect(mapStateToTodoListProps, mapDispatchToTodoListProps)(TodoList);
 
